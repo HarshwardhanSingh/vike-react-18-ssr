@@ -23,7 +23,8 @@ async function startServer() {
 
     app.get("*", async (req, res, next) => {
         const pageContxtInit = {
-            urlOriginal: req.originalUrl
+            urlOriginal: req.originalUrl,
+            res,
         }
         const pageContext = await renderPage(pageContxtInit);
         const {httpResponse} = pageContext;
@@ -31,14 +32,14 @@ async function startServer() {
         if (!httpResponse) {
             return next();
         } else {
-            const { body, statusCode, headers, earlyHints } = httpResponse;
-            if (res.writeEarlyHints) {
-                res.writeEarlyHints({ link: earlyHints.map((e) => e.earlyHintLink)})
-            }
+            // const { body, statusCode, headers, earlyHints } = httpResponse;
+            // if (res.writeEarlyHints) {
+            //     res.writeEarlyHints({ link: earlyHints.map((e) => e.earlyHintLink)})
+            // }
 
-            headers.forEach(([name, value]) => res.setHeader(name, value))
-            res.status(statusCode);
-            res.send(body)
+            // headers.forEach(([name, value]) => res.setHeader(name, value))
+            // res.status(statusCode);
+            // res.send()
         }
     })
 

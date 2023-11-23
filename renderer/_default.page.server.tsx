@@ -2,46 +2,47 @@ import ReactDOMServer from "react-dom/server";
 import { escapeInject, dangerouslySkipEscape } from "vike/server";
 import { PageShell } from "./PageShell";
 import type { PageContextServer } from "./types";
+import Html from "./Html";
 
 
-async function render(pageContext: PageContextServer) {
-    const { Page, pageProps } = pageContext;
+async function render(pageContext: any) {
+    const { Page, pageProps, res } = pageContext;
+
     if (!Page) {
         throw new Error("pageContext.Page is not present");
     }
 
-    const pageHTML = ReactDOMServer.renderToString(
-        <PageShell pageContext={pageContext}>
-            <Page {...pageProps} />
-        </PageShell>
+    const { pipe } = ReactDOMServer.renderToPipeableStream(
+        <Html>
+            <PageShell pageContext={pageContext}>
+                <Page {...pageProps} />
+            </PageShell>
+        </Html>, {
+            bootstrapModules: [], // how to discover these maybe pageContext._pageAssets()
+            bootstrapScripts: [], // how to discover these maybe pageContext._pageAssets
+            bootstrapScriptContent: `console.log("inline")`,
+            onShellReady() {
+                res.setHeader('content-type', 'text/html');
+                pipe(res);
+            }
+        }
     )
+
+    // const pageHTML = ReactDOMServer.renderToString(
+    //     <PageShell pageContext={pageContext}>
+    //         <Page {...pageProps} />
+    //     </PageShell>
+    // )
 
     const { documentProps } = pageContext.exports;
     const title = (documentProps && documentProps.title) || "title";
     const desc = (documentProps && documentProps.description) || "description";
 
-    const documentHtml = escapeInject`
-    <html lang="en">
-        <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="device-width, initial-scale=1.0" />
-            <meta name="description" content=${desc} />
-            <title>${title}</title>
-            <style>
-                #root {
-                    height: 100%;
-                }
-            </style> 
-        </head>
-        <body>
-                <div id="root">${dangerouslySkipEscape(pageHTML)}</div>
-        </body>
-    </html>
-    `
 
-    return {
-        documentHtml,
-    }
+    return {}
+    // return {
+    //     documentHtml,
+    // }
 }
 
 export {render}

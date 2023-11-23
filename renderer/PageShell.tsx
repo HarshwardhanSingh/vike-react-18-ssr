@@ -13,10 +13,10 @@ function PageShell({
     return (
         <React.StrictMode>
             <PageContextProvider pageContext={pageContext}>
-            <div>
-                <Link href="/">Home</Link>
-                <Link href="/about">About</Link>
-                <Link href="/contact">Contact</Link>
+                <div>
+                    <Link href="/">Home</Link>
+                    <Link href="/about">About</Link>
+                    <Link href="/contact">Contact</Link>
                 </div>
                 <div>{children}</div>
             </PageContextProvider>

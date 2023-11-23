@@ -9,12 +9,12 @@ const func = () => {
 }
 
 async function onBeforeRender(pageContext: PageContext) {
-    // await func()
+    const data = await func()
 
     return {
         pageContext: {
             pageProps: {
-                data: func()
+                data
             }
         }
     }
